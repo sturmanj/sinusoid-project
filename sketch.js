@@ -1,12 +1,12 @@
 let midline = 0.0;
 let amp = 0.0;
 let hshift = 0.0;
-let newPeriod = 0.0;
+let deltaX = 0.0;
 
-let midpoint = { "y": Number.MAX_VALUE }
-let extremePoint = { "y": Number.MIN_VALUE }
+let midpoint = { "y": Number.MAX_VALUE };
+let extremePoint = null;
 
-let yValues;
+let yValues = [];
 let points = [];
 
 function setup() {
@@ -17,9 +17,6 @@ function setup() {
     noStroke();
 
     setupHandsfree();
-
-    // yValues = new Array(floor(width + 10));
-    yValues = []
 }
 
 function draw() {
@@ -45,8 +42,8 @@ function drawAxis() {
 
     text(`${floor(height / 2)}`, 7 + width / 2, 15);
     text(`${ceil(-height / 2)}`, 7 + width / 2, height - 5);
-    text(`${floor(width / 2)}`, 0, height / 2 - 7);
-    text(`${ceil(-width / 2)}`, width - 30, height / 2 - 7);
+    text(`${floor(width / 2)}`, width - 30, height / 2 - 7);
+    text(`${ceil(-width / 2)}`, 0, height / 2 - 7);
     text(`0`, width / 2 + 7, height / 2 - 7);
 }
 
@@ -59,11 +56,11 @@ function calcGraph() {
     posNeg = extremePoint.y < 0.5 ? -1 : 1;
     hshift = (width - extremePoint.x * width);
     amp = abs(midpoint.y - extremePoint.y) * height;
-    newPeriod = TWO_PI / abs((midpoint.x - extremePoint.x) * 4 * width);
+    deltaX = TWO_PI / abs((midpoint.x - extremePoint.x) * 4 * width);
     
     for (let i = 0; i < (width + 10); i++) {
-        yValues.push(midline + posNeg * cos((x - hshift * newPeriod)) * amp);
-        x += newPeriod;
+        yValues.push(midline + posNeg * cos(x - hshift * deltaX) * amp);
+        x += deltaX;
     }
 }
 
@@ -79,7 +76,7 @@ function renderGraph() {
 
 function calcHands() {
     points = [];
-    midpoint = { "y": Number.MAX_VALUE }
+    midpoint = { "y": Number.MAX_VALUE };
     extremePoint = null;
 
     if (handsfree.data == null) return;
