@@ -1,7 +1,7 @@
 let midline = 0.0;
 let amp = 0.0;
 let hshift = 0.0;
-let deltaX = 0.0;
+let period = 0.0;
 
 let midpoint = { "y": Number.MAX_VALUE };
 let extremePoint = null;
@@ -17,7 +17,7 @@ function setup() {
     noStroke();
 
     setupHandsfree();
-}
+};
 
 function draw() {
     background(color(0, 0, 0));
@@ -28,7 +28,7 @@ function draw() {
 
     renderGraph();
     renderHands();
-}
+};
 
 function drawAxis() {
     stroke(color(255, 255, 255));
@@ -40,29 +40,28 @@ function drawAxis() {
 
     noStroke();
 
-    text(`${floor(height / 2)}`, 7 + width / 2, 15);
-    text(`${ceil(-height / 2)}`, 7 + width / 2, height - 5);
-    text(`${floor(width / 2)}`, width - 30, height / 2 - 7);
-    text(`${ceil(-width / 2)}`, 0, height / 2 - 7);
-    text(`0`, width / 2 + 7, height / 2 - 7);
-}
+    text(floor(height / 2), 7 + width / 2, 15);
+    text(ceil(-height / 2), 7 + width / 2, height - 5);
+    text(floor(width / 2), width - 30, height / 2 - 7);
+    text(ceil(-width / 2), 0, height / 2 - 7);
+    text(0, width / 2 + 7, height / 2 - 7);
+};
 
 function calcGraph() {
     if (points.length != 2) return;
 
-    let x = 0;
     yValues = [];
     midline = midpoint.y * height;
     posNeg = extremePoint.y < 0.5 ? -1 : 1;
     hshift = (width - extremePoint.x * width);
     amp = abs(midpoint.y - extremePoint.y) * height;
-    deltaX = TWO_PI / abs((midpoint.x - extremePoint.x) * 4 * width);
-    
-    for (let i = 0; i < (width + 10); i++) {
-        yValues.push(midline + posNeg * cos(x - hshift * deltaX) * amp);
-        x += deltaX;
-    }
-}
+    period = abs((midpoint.x - extremePoint.x) * 4 * width);
+    const b = TWO_PI / period;
+
+    for (let x = 0; x < (width + 10); x++) {
+        yValues.push(midline + posNeg * cos(b * (x - hshift)) * amp);
+    };
+};
 
 function renderGraph() {
     if (points.length != 2) return;
@@ -71,8 +70,8 @@ function renderGraph() {
 
     for (let x = 0; x < yValues.length; x++) {
         ellipse(x, yValues[x], 10, 10);
-    }
-}
+    };
+};
 
 function calcHands() {
     points = [];
@@ -98,7 +97,7 @@ function calcHands() {
     });
 
     extremePoint = points[1 - points.indexOf(midpoint)];
-}
+};
 
 function renderHands() {
     if (midpoint.y == Number.MAX_VALUE) return;
@@ -118,7 +117,7 @@ function renderHands() {
     fill(color(255, 0, 0));
     ellipse(x, y, 10, 10);
     text(`(${round(x - width / 2)}, ${round(height / 2 - y)})`, x + 10, y);
-}
+};
 
 function setupHandsfree() {
     handsfree = new Handsfree({
@@ -130,7 +129,7 @@ function setupHandsfree() {
 
     handsfree.start();
 
-    handsfree.enablePlugins('browser');
+    handsfree.enablePlugins("browser");
     handsfree.plugin.faceClick.disable();
     handsfree.plugin.facePointer.disable();
     handsfree.plugin.faceScroll.disable();
